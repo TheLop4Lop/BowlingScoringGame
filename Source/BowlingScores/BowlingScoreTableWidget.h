@@ -15,20 +15,23 @@ class BOWLINGSCORES_API UBowlingScoreTableWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	// Recieves a int32 to assign respective score values to try arrays.
-	void SetFrameScore(int32 CurrentFrame, FString FirstTry, FString SecondTry, FString FrameScore);
-
-	// Recieves a int32 to assign in to firstTry score values based on Frame value.
+	// Recieves a int32 to assign in to firstTry score values based on Frame.
 	void SetFirstTryScore(int32 CurrentFrame, FString FirstTry);
 
-	// Returns a int32 as first score value based on Frame Value.
+	// Returns a int32 as first score value based on Frame.
 	int32 GetFirstTryScore(int32 CurrentFrame);
 
-	// Recieves a int32 to assign in to secondTry score values based on Frame value.
+	// Recieves a int32 to assign in to secondTry score values based on Frame.
 	void SetSecondTryScore(int32 CurrentFrame, FString SecondTry);
 
-	// Returns a int32 as Second score value based on Frame Value.
+	// Returns a int32 as Second score value based on Frame.
 	int32 GetSecondTryScore(int32 CurrentFrame);
+
+	// Recieves a int32 to assign in to AllFrameScores score values based on Frame.
+	void SetFrameScore(int32 CurrentFrame, FString FrameScore);
+
+	// Returns a int32 as Frame score value based on Frame.
+	int32 GetFrameScore(int32 CurrentFrame);
 
 protected:
 	void NativeConstruct() override;

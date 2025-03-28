@@ -31,11 +31,13 @@ int32 UBowlingScoreTableWidget::GetFirstTryScore(int32 CurrentFrame)
 {
 	if (!AllFirstTry[CurrentFrame])
 	{
-		FString ScoreString =  AllFirstTry[CurrentFrame]->GetText().ToString();
-		return FCString::Atoi(*ScoreString);
+        UE_LOG(LogTemp, Error, TEXT("GetFirstTryScore[%d]: es nullptr"), CurrentFrame);
+        return 0;
 	}
 
-	return 0;
+    FString ScoreString = AllFirstTry[CurrentFrame]->GetText().ToString();
+    return FCString::Atoi(*ScoreString);
+
 }
 
 // Recieves a int32 to assign in to secondTry score values based on Frame value.
@@ -56,11 +58,39 @@ int32 UBowlingScoreTableWidget::GetSecondTryScore(int32 CurrentFrame)
 {
 	if (!AllSecondTry[CurrentFrame])
 	{
-		FString ScoreString = AllSecondTry[CurrentFrame]->GetText().ToString();
-		return FCString::Atoi(*ScoreString);
+        UE_LOG(LogTemp, Error, TEXT("GetSecondTryScore[%d]: es nullptr"), CurrentFrame);
+        return 0;
 	}
 
-	return 0;
+    FString ScoreString = AllSecondTry[CurrentFrame]->GetText().ToString();
+    return FCString::Atoi(*ScoreString);
+
+}
+
+// Recieves a int32 to assign in to AllFrameScores score values based on Frame.
+void UBowlingScoreTableWidget::SetFrameScore(int32 CurrentFrame, FString FrameScore)
+{
+    if (!AllFrameScores[CurrentFrame])
+    {
+        UE_LOG(LogTemp, Error, TEXT("AllFrameScores: AllFirstTry[%d] es nullptr"), CurrentFrame);
+        return;
+    }
+
+    AllFrameScores[CurrentFrame]->SetText(FText::FromString(FrameScore));
+
+}
+
+// Returns a int32 as Frame score value based on Frame.
+int32 UBowlingScoreTableWidget::GetFrameScore(int32 CurrentFrame)
+{
+    if (!AllFrameScores[CurrentFrame])
+    {
+        UE_LOG(LogTemp, Error, TEXT("GetFrameScore[%d]: es nullptr"), CurrentFrame);
+        return 0;
+    }
+
+    FString ScoreString = AllFrameScores[CurrentFrame]->GetText().ToString();
+    return FCString::Atoi(*ScoreString);
 
 }
 

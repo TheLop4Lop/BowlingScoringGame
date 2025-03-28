@@ -62,60 +62,27 @@ void UUIManager::ExecuteActionFromButtonPressed(EButtonAction ButtonAction)
 	switch (ButtonAction)
 	{
 	case CONFIRM:
-	if (BowlingGameMode && InputScoreWidget && ScoreBoardWidget)
-	{
-		int32 CurrentFrame = BowlingGameMode->GetCurrentFrame() - 1;
-		int32 PlayerThrowTry = BowlingGameMode->GetCurrentTry();
-
-		int32 ScoreEntered = InputScoreWidget->GetScoreFromEditableTextBlock();
-
-		if (ScoreEntered >= MinValue && ScoreEntered <= MaxValue)
+		if (BowlingGameMode && InputScoreWidget && ScoreBoardWidget)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("TOP, CurrentFrame: %i, PlayerThrowTry: %i, ScoreEntered: %i"), CurrentFrame + 1, PlayerThrowTry, ScoreEntered);
+			int32 CurrentFrame = BowlingGameMode->GetCurrentFrame() - 1;
+			int32 PlayerThrowTry = BowlingGameMode->GetCurrentTry();
 
-			// Clear the Score in InputWidget.
-			InputScoreWidget->CleanEditabletextBlock();
+			int32 ScoreEntered = InputScoreWidget->GetScoreFromEditableTextBlock();
 
-			// First try.
-			if (PlayerThrowTry == 1)
+			if (ScoreEntered >= MinValue && ScoreEntered <= MaxValue)
 			{
-				if (ScoreEntered < MaxValue)
-				{
-					// Set First try Score.
-					ScoreBoardWidget->SetFirstTryScore(CurrentFrame, FString::FromInt(ScoreEntered));
-				}
-				else
-				{
-					// Set Strike (No second try needed).
-					ScoreBoardWidget->SetFirstTryScore(CurrentFrame, FString::FromInt(MinValue - 1));
-					ScoreBoardWidget->SetSecondTryScore(CurrentFrame, FString::FromInt(MaxValue));
+				// Clear the Score in InputWidget.
+				InputScoreWidget->CleanEditabletextBlock();
 
-					// Move to next try immediately.
-					BowlingGameMode->AddNextTry();
-					BowlingGameMode->ChangeToTheNextFrame();
+				ManageAttemptsByThePlayerInput(CurrentFrame, PlayerThrowTry, ScoreEntered);
 
-					return; // Exit here, because after a strike, no second try is needed.
-				}
-
-				BowlingGameMode->AddNextTry();
+				ManagePointsCalculations(CurrentFrame);
 			}
-			// Second Try
 			else
 			{
-				int32 FirstTryScore = ScoreBoardWidget->GetFirstTryScore(CurrentFrame);
-
-				// Check for a Spare.
-				if (ScoreEntered + FirstTryScore == MaxValue)
-				{
-					ScoreBoardWidget->SetSecondTryScore(CurrentFrame, FString::FromInt(ScoreEntered));
-					BowlingGameMode->AddNextTry();
-					BowlingGameMode->ChangeToTheNextFrame();
-				}
+				UE_LOG(LogTemp, Warning, TEXT("Out of parameter value, ScoreEntered: %i"), ScoreEntered);
 			}
-			UE_LOG(LogTemp, Warning, TEXT("Down, CurrentFrame: %i, PlayerThrowTry: %i, ScoreEntered: %i"), CurrentFrame + 1, PlayerThrowTry, ScoreEntered);
 		}
-	}
-
 		break;
 	case CLEAR_INPUT:
 		InputScoreWidget->CleanEditabletextBlock();
@@ -128,6 +95,75 @@ void UUIManager::ExecuteActionFromButtonPressed(EButtonAction ButtonAction)
 		break;
 	default:
 		break;
+	}
+
+}
+
+void UUIManager::ManageAttemptsByThePlayerInput(int32 Frame, int32 Attempts, int32 Score)
+{
+	// First try.
+	if (Attempts == 1)
+	{
+		if (Score < MaxValue)
+		{
+			// Set First try Score.
+			ScoreBoardWidget->SetFirstTryScore(Frame, FString::FromInt(Score));
+		}
+		else
+		{
+			// Set Strike.
+			ScoreBoardWidget->SetFirstTryScore(Frame, FString::FromInt(MinValue - 1));
+			ScoreBoardWidget->SetSecondTryScore(Frame, FString::FromInt(MaxValue));
+
+			// Move to next try immediately.
+			BowlingGameMode->ChangeToTheNextFrame();
+
+			return; // Exit here, because after a strike, no second try is needed.
+		}
+
+		BowlingGameMode->AddNextTry();
+	}
+	// Second Try
+	else
+	{
+		int32 FirstTryScore = ScoreBoardWidget->GetFirstTryScore(Frame);
+
+		// Check for a Spare.
+		if (Score + FirstTryScore == MaxValue or Score + FirstTryScore < MaxValue)
+		{
+			ScoreBoardWidget->SetSecondTryScore(Frame, FString::FromInt(Score));
+			BowlingGameMode->AddNextTry();
+			BowlingGameMode->ChangeToTheNextFrame();
+		}
+	}
+
+}
+
+void UUIManager::ManagePointsCalculations(int32 Frame)
+{
+	if (Frame == MinValue - 1)
+	{
+		// Simply sum the two attempts of the last frame.
+		ScoreBoardWidget->SetFrameScore(Frame, FString::FromInt(ScoreBoardWidget->GetFirstTryScore(Frame) + ScoreBoardWidget->GetSecondTryScore(Frame)));
+	}
+	else if (Frame > MinValue - 1) // If it's not the last frame, evaluate based on previous frames
+	{
+		// Sum the score of the two attempts in the current frame plus the accumulated score from previous frames.
+		int32 TotalPreviousFramesScore = ScoreBoardWidget->GetFrameScore(Frame - 1);
+		ScoreBoardWidget->SetFrameScore(Frame, FString::FromInt(ScoreBoardWidget->GetFirstTryScore(Frame) + ScoreBoardWidget->GetSecondTryScore(Frame) + TotalPreviousFramesScore));
+
+		// Check if the previous frame was a Strike
+		if (ScoreBoardWidget->GetFirstTryScore(Frame - 1) == MinValue - 1 && ScoreBoardWidget->GetSecondTryScore(Frame - 1) == 0) // Checks if it was a Strike
+		{
+			// If it was a Strike, add the full score of the current frame (both attempts).
+			ScoreBoardWidget->SetFrameScore(Frame - 1, FString::FromInt(MaxValue + ScoreBoardWidget->GetFirstTryScore(Frame) + ScoreBoardWidget->GetSecondTryScore(Frame) + TotalPreviousFramesScore));
+		}
+		// Check if the previous frame was a Spare
+		else if ((ScoreBoardWidget->GetFirstTryScore(Frame - 1) + ScoreBoardWidget->GetSecondTryScore(Frame - 1)) == MaxValue) // Checks if it was a Spare
+		{
+			// If it was a Spare, add only the first attempt of the current frame.
+			ScoreBoardWidget->SetFrameScore(Frame - 1, FString::FromInt(MaxValue + ScoreBoardWidget->GetFirstTryScore(Frame) + TotalPreviousFramesScore));
+		}
 	}
 
 }

@@ -11,7 +11,6 @@ void UBoardActionWidget::NativeConstruct()
 	BindConfirmButtonAction();
 
 	BindClearButtonActions();
-	BindExitButtonAction();
 
 	BindExitButtonAction();
 
@@ -47,7 +46,6 @@ void UBoardActionWidget::BindExitButtonAction()
 {
 	if (ExitButton)
 	{
-		ExitButton->OnReleased.RemoveDynamic(this, &UBoardActionWidget::SetExitButtonLogic);
 		ExitButton->OnReleased.AddDynamic(this, &UBoardActionWidget::SetExitButtonLogic);
 	}
 

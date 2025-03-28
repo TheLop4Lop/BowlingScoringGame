@@ -42,6 +42,10 @@ private:
 	// Recieves as a parameter a Enum from BoardActionWidget to determine wich button was pressed.
 	void ExecuteActionFromButtonPressed(enum EButtonAction ButtonAction);
 
+	void ManageAttemptsByThePlayerInput(int32 Frame, int32 Attempts, int32 Score);
+
+	void ManagePointsCalculations(int32 Frame);
+
 	const int32 MaxValue = 10;
 	const int32 MinValue = 1;
 	
