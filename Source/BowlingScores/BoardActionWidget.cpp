@@ -10,6 +10,11 @@ void UBoardActionWidget::NativeConstruct()
 
 	BindConfirmButtonAction();
 
+	BindClearButtonActions();
+	BindExitButtonAction();
+
+	BindExitButtonAction();
+
 }
 
 // Binds all Buttons to their respective function logic.
@@ -19,7 +24,7 @@ void UBoardActionWidget::BindConfirmButtonAction()
 	{
 		ConfirmScoreButton->OnReleased.AddDynamic(this, &UBoardActionWidget::SetConfirmButtonLogic);
 	}
-
+	
 }
 
 // Binds Button to their respective function logic.
@@ -42,6 +47,7 @@ void UBoardActionWidget::BindExitButtonAction()
 {
 	if (ExitButton)
 	{
+		ExitButton->OnReleased.RemoveDynamic(this, &UBoardActionWidget::SetExitButtonLogic);
 		ExitButton->OnReleased.AddDynamic(this, &UBoardActionWidget::SetExitButtonLogic);
 	}
 

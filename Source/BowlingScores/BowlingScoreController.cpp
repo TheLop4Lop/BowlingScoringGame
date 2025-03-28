@@ -2,18 +2,23 @@
 
 
 #include "BowlingScoreController.h"
-#include "InputAction.h"
+#include "Blueprint/UserWidget.h"  // Needed to use Widgets subclasses.
+#include "UIManager.h" // Needed to pass the widget classes to implement and add to viewport.
 
 void ABowlingScoreController::BeginPlay()
 {
 	Super::BeginPlay();
 
-}
+	// Make a instance of UIManager class.
+	UIManager = NewObject<UUIManager >(this);
+	if (UIManager)
+	{
+		UIManager->ImplementBowlingScoreWidgets(ScoreBoardWidgetClass, ButtonActionWidgetClass, InputScoreWidgetClass, this);
+		UIManager->InitializateClassEventBinding();
+	}
 
-void ABowlingScoreController::SetupInputComponent()
-{
-	Super::SetupInputComponent();
-
-
+	// To stay outside of Game Mode.
+	SetInputMode(FInputModeUIOnly());
+	bShowMouseCursor = true;
 
 }

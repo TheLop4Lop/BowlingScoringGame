@@ -17,8 +17,22 @@ class BOWLINGSCORES_API ABowlingScoreController : public APlayerController
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void SetupInputComponent() override;
+	//virtual void SetupInputComponent() override;
 
 private:
-	
+	// Store reference instance class for Score Table Widget Class 
+	UPROPERTY(EditAnywhere, Category = "UI", meta = (AllowPrivateAccess))
+	TSubclassOf<UUserWidget> ScoreBoardWidgetClass;
+
+	// Store reference instance class for Board Action Widget Class
+	UPROPERTY(EditAnywhere, Category = "UI", meta = (AllowPrivateAccess))
+	TSubclassOf<UUserWidget> ButtonActionWidgetClass;
+
+	// Store reference instance class for Score Input Widget Class.
+	UPROPERTY(EditAnywhere, Category = "UI", meta = (AllowPrivateAccess))
+	TSubclassOf<UUserWidget> InputScoreWidgetClass;
+
+	// Holds value for UIManager intance.
+	class UUIManager* UIManager;
+
 };

@@ -18,6 +18,21 @@ public:
 	// Recieves a int32 to assign respective score values to try arrays.
 	void SetFrameScore(int32 CurrentFrame, FString FirstTry, FString SecondTry, FString FrameScore);
 
+	// Recieves a int32 to assign in to firstTry score values based on Frame value.
+	void SetFirstTryScore(int32 CurrentFrame, FString FirstTry);
+
+	// Returns a int32 as first score value based on Frame Value.
+	int32 GetFirstTryScore(int32 CurrentFrame);
+
+	// Recieves a int32 to assign in to secondTry score values based on Frame value.
+	void SetSecondTryScore(int32 CurrentFrame, FString SecondTry);
+
+	// Returns a int32 as Second score value based on Frame Value.
+	int32 GetSecondTryScore(int32 CurrentFrame);
+
+protected:
+	void NativeConstruct() override;
+
 private:
 	// Holds reference for visual representation of Bowling Score Table.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
@@ -172,6 +187,9 @@ private:
 	// Total text block to display score.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* GAME_TotalScore;
+
+	// Because of nullptr problems AllFirstTry, AllSecondTry, AllFrameScores are initialized int NativeConstructor due UTextBlock time creation.
+	void ManualArraysInitializations();
 
 	// Holds all the FX (frames) first trys.
 	UTextBlock* AllFirstTry[10] = {F1_FirstTryScore, F2_FirstTryScore, F3_FirstTryScore, F4_FirstTryScore, F5_FirstTryScore,
